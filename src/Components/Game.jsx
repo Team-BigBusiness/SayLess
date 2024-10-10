@@ -3,30 +3,61 @@ import { getRandomQuote, famousQuotes } from './Quotes.jsx';
 import io from 'socket.io-client';
 import axios from 'axios';
 
-const apiURL = import.meta.env.VITE_API_URL;
-const socketPort = import.meta.env.SOCKET_PORT;
 
 // TODO need to adjust where this connects to later likely
-const socket = io.connect(`${apiURL}:${socketPort}`);
+
 
 const Game = () => {
   const [allQuotes, setAllQuotes] = useState([]);
   const [quote, setQuote] = useState("");
-
+  
   const [maxLengthVariable, setMaxLengthVariable] = useState(20);
-
+  
   const [showLobby, setShowLobby] = useState(true);
   const [showPlayerOneTurn, setShowPlayerOneTurn] = useState(false);
   const [showPlayerTwoWait, setShowPlayerTwoWait] = useState(false);
   const [showPlayerTwoTurn, setShowPlayerTwoTurn] = useState(false);
   const [showPlayerOneWait, setShowPlayerOneWait] = useState(false);
   const [showGameResult, setShowGameResult] = useState(false);
-
+  
   const [seconds, setSeconds] = useState(0);
-
+  
   const [playerOneInput, setPlayerOneInput] = useState("");
   const [playerTwoInput, setPlayerTwoInput] = useState("");
   const [winOrLose, setWinOrLose] = useState("");
+  const [socket, setSocket] = useState(null);
+  
+  const apiURL = import.meta.env.VITE_API_URL;
+  // const socketPort = import.meta.env.SOCKET_PORT;
+
+
+  useEffect(() => {
+    // const newSocket = io.connect(`${import.meta.env.VITE_API_URL}:${import.meta.env.SOCKET_PORT}`);
+    const newSocket = io.connect(`https://sayless.onrender.com`, {
+      withCredentials: true,
+      transports: ['websocket'],
+    });
+    setSocket(newSocket);
+    return () => {
+      if (newSocket) {
+        newSocket.disconnect();
+      }
+    };
+  }, [apiURL]);
+
+  useEffect(() => {
+    if (!socket) return;
+
+    // Event listeners, for example:
+    socket.on("p1start", () => {
+      console.log("Player 1 start event received");
+    });
+
+   
+    return () => {
+      socket.off("p1start");
+    };
+  }, [socket]);
 
   useEffect(()=> {
     setAllQuotes(famousQuotes)
@@ -44,6 +75,21 @@ const Game = () => {
   },[seconds])
 
   useEffect(()=>{
+    if (!socket) return; //added this for when socket is null on first load since you guys are using useStates and not useRef
+
+
+    socket.on('connect', () => {
+      console.log('Socket connected:', socket.id);
+    });
+  
+    socket.on('disconnect', () => {
+      console.warn('Socket disconnected');
+    });
+  
+    socket.on('connect_error', (error) => {
+      console.error('Socket connection error:', error);
+    });
+
     socket.on("p1start", () => {
       setShowLobby(false);
       setShowPlayerOneTurn(true);
@@ -107,7 +153,7 @@ const Game = () => {
     return (() => {
       socket.off('disconnect')
     });
-  },[])
+  },[socket])
 
   const countWordsEasy = (text) => {
     let noVowels = text.replace(/[aeiou]/g,'');
@@ -136,9 +182,16 @@ const Game = () => {
     setMaxLengthVariable(countWordsExtreme(quote));
   }
 
-  const gameStart = () =>{
-    socket.emit("lobbysend");
-  }
+  const gameStart = () => {
+    console.log("gameStart function called");
+    if (socket) {
+      console.log("Socket is defined, emitting 'lobbysend'");
+      socket.emit("lobbysend");
+    } else {
+      console.error("Socket is not defined");
+    }
+  };
+  
 
   const playerOneTurnOver = () => {
     socket.emit("p1send", { quote, playerOneInput });
@@ -156,7 +209,7 @@ const Game = () => {
     const token = localStorage.getItem('token');
       if ((token !== undefined)){
         try{
-          const response = await axios.patch(`${import.meta.env.VITE_API_URL}/users/player-${winLose}`, {
+          const response = await axios.patch(`${import.meta.env.VITE_API_URL}/api/v1/users/player-${winLose}`, {
             headers: {
               'Authorization': `Bearer ${token}`
             }
@@ -180,7 +233,7 @@ const Game = () => {
       { showLobby ?
         <>
           <h2 className="game-h2"> Welcome to Say Less </h2>
-          <button className="game-p1" onClick={() => {gameStart()}} type="button">Click Here to be Player One</button>
+          <button className="game-p1" onClick={() => {gameStart()}} type="button">Click Here to  be Player One</button>
         </>
         :
         <></>
@@ -251,6 +304,6 @@ const Game = () => {
 
     </>
   )
-}
+};
 
 export default Game 

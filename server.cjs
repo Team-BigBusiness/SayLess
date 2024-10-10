@@ -7,19 +7,47 @@ require('dotenv').config();
 
 const app = express();
 
-app.use(cors());
+
+const allowedOrigins = ['http://localhost:3000', 'https://sayless.onrender.com', 'https://www.sayless.onrender.com', 'http://sayless.onrender.com', 'sayless:443','http://www.sayless.onrender.com'];
+
+app.options('*', (req, res) => {
+  const origin = req.headers.origin;
+
+  if (allowedOrigins.includes(origin)) {
+    res.setHeader('Access-Control-Allow-Origin', origin);
+  }
+  res.setHeader('Access-Control-Allow-Methods', 'GET', 'POST', 'OPTIONS', 'PATCH');
+  res.setHeader('Access-Control-Allow-Headers', 'Content-Type', 'Authorization');
+  res.sendStatus(204);
+});
+app.use(cors({
+  origin: function (origin, callback) {
+    console.log('Request Origin:', origin);  
+
+    if (!origin) return callback(null, true); 
+
+    if (allowedOrigins.indexOf(origin) === -1) {
+      const msg = 'The CORS policy for this site does not allow access from the specified Origin.';
+      console.error('Blocked Origin:', origin); 
+      return callback(new Error(msg), false);
+    }
+    return callback(null, true);
+  },
+  methods: ['GET', 'POST', 'OPTIONS'],
+  allowedHeaders: ['Content-Type', 'Authorization'],
+}));
+
 app.use(express.json());
 app.use(express.static(path.join(__dirname, 'dist')));
 
 app.use('/api/v1', require('./api/index.cjs'));
-app.use()
 
 const server = http.createServer(app);
 
 // TODO this origin needs to be changed to not be hard-coded
 const io = new Server(server, {
   cors: {
-    origin: "http://sayless.onrender.com", // this may be changed further, point being that this should be actual website url
+    origin: allowedOrigins, // this may be changed further, point being that this should be actual website url
     methods: ["GET", "POST"],
   },
 });
@@ -28,6 +56,7 @@ io.on('connection', (socket) =>{
   console.log('A user connected');
 
   socket.on("lobbysend", () =>{
+    console.log("Server is creating lobby")
     socket.emit("p1start");
     socket.broadcast.emit("p2wait");
   })
@@ -55,17 +84,12 @@ io.on('connection', (socket) =>{
 
 });
 
-app.get('/', (req, res, next) =>(
-  res.sendFile(path.join(__dirname,'dist','index.html'))
-));
-
 app.get('*', (req, res, next) =>(
   res.sendFile(path.join(__dirname,'dist','index.html'))
 ));
 
-const PORT = process.env.PORT || 3000;
-app.listen(PORT, () => { console.log(`listening on port ${PORT}`)});
+const PORT = process.env.PORT || 3000; // Use port 443 for HTTPS by default
 
-
-const SOCKET = process.env.SOCKET_PORT || 3001;
-server.listen(SOCKET, () => {console.log(`listening on ${SOCKET}`)});
+server.listen(PORT, () => {
+  console.log(`HTTPS server and Socket.io are listening on port ${PORT}`);
+});

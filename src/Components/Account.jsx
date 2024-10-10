@@ -2,7 +2,7 @@ import { useState, useEffect} from 'react';
 import { useNavigate } from 'react-router-dom';
 import { selectAvatar } from './Avatars.jsx';
 import { selectBadges, winBadgesArray, playBadgesArray } from './Badges.jsx';
-import UpdateUserDetails from './updateUserDetails';
+import UpdateUserDetails from './UpdateUserDetails';
 
 const Account = ({ setLoginMessage }) => {
   const [username, setUsername] = useState("");
@@ -21,7 +21,7 @@ const Account = ({ setLoginMessage }) => {
     const getUserData = async () =>{
       const token = localStorage.getItem('token');
         try {
-          const response = await fetch(`${import.meta.env.VITE_API_URL}/users/userdetails`, {
+          const response = await fetch(`${import.meta.env.VITE_API_URL}/api/v1/users/userdetails`, {
             method: 'GET',
             headers: {
               'Authorization': `Bearer ${token}`,
