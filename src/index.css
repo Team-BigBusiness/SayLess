@@ -316,6 +316,12 @@ ul {
 img {
     border-radius: 50%;
 }
+
+.account-upper-body{
+    display: flex;
+    flex-wrap: wrap;
+}
+
 .user-avatar-image {
     width: 2.5rem;
     height: 2.5rem
@@ -328,6 +334,11 @@ img {
     align-items: center;
     width: 5rem;
     height: 5rem
+}
+
+.badge-box {
+    display: flex;
+    flex-wrap: wrap;
 }
 
 .footer {
