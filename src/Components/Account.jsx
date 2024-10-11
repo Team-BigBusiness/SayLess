@@ -44,7 +44,7 @@ const Account = ({ setLoginMessage }) => {
         } catch (error){
           console.log('Unable to get data', error)
           setLoginMessage(token);
-          navigate('/Login');
+          // navigate('/Login');
         };   
       };
 
@@ -66,29 +66,31 @@ const Account = ({ setLoginMessage }) => {
         <h1>Your Account History</h1> <br /><br />
 
         <section>
-
-          <section id="account-user-details"> 
-            <h3 className="account-played">Games Played: {gamesPlayed} </h3>
+          <section id="account-upper-body">
+            <section id="account-user-details"> 
+              <h3 className="account-played">Games Played: {gamesPlayed} </h3>
               <h3 className="account-won">Games Won: {gamesWon} </h3>
               <h3 className="account-lost">Games Lost: {gamesLost} </h3>
               <h3 className="account-ratio">W/L Ratio: {WLRatio}% </h3>
               <br /> <br />
-          </section>
+            </section>
 
-          <section id="user-badges">
-            <h3>Your Badges:
-              <ul>
-                {wBadges.map((badge)=>{
+            <section id="user-badges">
+              <h3>Your Badges:
+                <ul id="badge-box">
 
-                  return <li key={badge.id}>
+                  {wBadges.map((badge)=>{
+                    return <li key={badge.id}>
                     <img className={badge.className} src={badge.image} alt={badge.alt}/>
                   </li>})}
-                {pBadges.map((badge)=>{
-                  return <li key={badge.id}>
-                    <img className={badge.className} src={badge.image} alt={badge.alt}/>
-                  </li>})}
+
+                  {pBadges.map((badge)=>{
+                    return <li key={badge.id}>
+                      <img className={badge.className} src={badge.image} alt={badge.alt}/>
+                    </li>})}
                 </ul>
-                </h3>
+              </h3>
+            </section>
           </section>
         </section>
         <UpdateUserDetails />
