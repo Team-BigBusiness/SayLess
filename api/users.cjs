@@ -10,11 +10,15 @@ router.use(express.json())
 
 // middleware using jsonwebtoken
 const verifyToken = (req, res, next) => {
+  if (req.method === 'OPTIONS') {
+    return next();
+  }
   const token = req.headers['authorization'];
   if (!token) {
     return res.status(403).send('Bad Token');
   }
   try {
+    console.log(token);
     const decoded = jwt.verify(token.split(' ')[1], process.env.JWT_SECRET);
     req.user = decoded;
   } catch (error) {

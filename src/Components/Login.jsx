@@ -14,7 +14,8 @@ const Login = ({ loginMessage, setLoginMessage }) => {
 
   const logInUser = async () => {
     try {
-      const response = await fetch(`${import.meta.env.VITE_API_URL}/api/v1/users/login`, {
+      // const response = await fetch(`${import.meta.env.VITE_API_URL}/api/v1/users/login`, {
+      const response = await fetch(`/api/v1/users/login`, {
         method: 'POST',
         headers: {
           'Content-Type': 'application/json',

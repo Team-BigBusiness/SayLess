@@ -7,8 +7,13 @@ require('dotenv').config();
 
 const app = express();
 
+app.use((req, res, next) => {
+  console.log('Incoming Request:', req.method, req.url);
+  console.log('Headers:', req.headers);
+  next();
+});
 
-const allowedOrigins = ['http://localhost:3000', 'https://sayless.onrender.com', 'https://www.sayless.onrender.com', 'http://sayless.onrender.com', 'sayless:443','http://www.sayless.onrender.com'];
+const allowedOrigins = ['http://localhost:5173/Login', 'http://localhost:5173', 'http://localhost:3000', 'https://sayless.onrender.com', 'https://www.sayless.onrender.com', 'http://sayless.onrender.com', 'sayless:443','http://www.sayless.onrender.com'];
 
 app.options('*', (req, res) => {
   const origin = req.headers.origin;
@@ -17,7 +22,7 @@ app.options('*', (req, res) => {
     res.setHeader('Access-Control-Allow-Origin', origin);
   }
   res.setHeader('Access-Control-Allow-Methods', 'GET', 'POST', 'OPTIONS', 'PATCH');
-  res.setHeader('Access-Control-Allow-Headers', 'Content-Type', 'Authorization');
+  res.setHeader('Access-Control-Allow-Headers', 'Content-Type', 'Authorization', 'authorization');
   res.sendStatus(204);
 });
 app.use(cors({
@@ -34,7 +39,7 @@ app.use(cors({
     return callback(null, true);
   },
   methods: ['GET', 'POST', 'OPTIONS'],
-  allowedHeaders: ['Content-Type', 'Authorization'],
+  allowedHeaders: ['Content-Type', 'Authorization', 'authorization'],
 }));
 
 app.use(express.json());
