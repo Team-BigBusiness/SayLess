@@ -18,7 +18,6 @@ const verifyToken = (req, res, next) => {
     return res.status(403).send('Bad Token');
   }
   try {
-    console.log(token);
     const decoded = jwt.verify(token.split(' ')[1], process.env.JWT_SECRET);
     req.user = decoded;
   } catch (error) {
