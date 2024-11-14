@@ -7,7 +7,7 @@ require('dotenv').config();
 
 const app = express();
 
-const allowedOrigins = ['https://sayless.onrender.com', 'https://www.sayless.onrender.com', 'http://sayless.onrender.com', 'sayless:443','http://www.sayless.onrender.com'];
+const allowedOrigins = ['https://sayless-game.onrender.com', 'https://www.sayless-game.onrender.com', 'http://sayless-game.onrender.com', 'sayless-game:443','http://www.sayless-game.onrender.com'];
 
 app.options('*', (req, res) => {
   const origin = req.headers.origin;
