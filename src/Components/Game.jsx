@@ -32,7 +32,7 @@ const Game = () => {
 
   useEffect(() => {
     // const newSocket = io.connect(`${import.meta.env.VITE_API_URL}:${import.meta.env.SOCKET_PORT}`);
-    const newSocket = io.connect(`https://sayless.onrender.com`, {
+    const newSocket = io.connect(`https://sayless-game.onrender.com`, {
       withCredentials: true,
       transports: ['websocket'],
     });
